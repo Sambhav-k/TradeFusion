@@ -9,23 +9,40 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from "@/components/ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/components/ui/input-otp';
+import { useDispatch, useSelector } from 'react-redux';
+import { sendVerificationOtp } from '@/State/Auth/Action';
 
 const AccountVerificationForm = () => {
     const [value,setValue]=useState("")
+    const dispatch = useDispatch();
+  const {auth}=useSelector(store=>store)
 
     const handleSubmit=()=>{
         console.log("Handle Submit")
     }
+
+    const handleSendOtp = (verificationType) => {
+        dispatch(
+          sendVerificationOtp({
+            verificationType,
+            jwt: localStorage.getItem("jwt"),
+          })
+        );
+      };
 
     return (
         <div className='flex justify-center '>
             <div className='space-y-5 mt-10 w-full'>
                 <div className='flex justify-between items-center'>
                     <p>Email :</p>
-                    <p>sambhav03@gmail.com</p>
+                    <p>{auth.user?.email}</p>
                     <Dialog>
                         <DialogTrigger>
-                            <Button className="">Send OTP</Button>
+                        <Button
+              onClick={() => handleSendOtp("EMAIL")}
+              >
+                Sent OTP
+              </Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader className="">
@@ -33,7 +50,8 @@ const AccountVerificationForm = () => {
                             </DialogHeader>
                             <div className='py-5 flex gap-10 justify-center items-center '>
                                 <InputOTP 
-                                onChange={()=>setValue(value)}
+                                value={value}
+                                onChange={(value)=>setValue(value)}
                                 maxLength={6}>
                                     <InputOTPGroup>
                                         <InputOTPSlot index={0} />
@@ -48,7 +66,7 @@ const AccountVerificationForm = () => {
                                     </InputOTPGroup>
                                 </InputOTP>
                                 <DialogClose>
-                                    <Button onClick={handleSubmit} className="w-[10rem]">
+                                    <Button onClick={handleSubmit(value)} className="w-[10rem]">
                                         Submit
                                     </Button>
                                 </DialogClose>

@@ -9,12 +9,24 @@ import { Dialog,
   DialogTrigger, } from '@/components/ui/dialog'
 import { Button } from "@/components/ui/button";
 import AccountVerificationForm from './AccountVerificationForm'
+import { useDispatch, useSelector } from 'react-redux'
+import { enableTwoStepAuthentication, verifyOtp } from '@/State/Auth/Action'
 
 const Profile = () => {
+  const {auth,wallet}=useSelector(store=>store)
+  const dispatch = useDispatch();
 
-  const handleEnableTwoStepVerification=()=>{
-    console.log("two step verification")
+  const handleEnableTwoStepVerification =(otp)=>{
+    console.log("EnableTwoStepVerification",otp)
+    dispatch(enableTwoStepAuthentication({jwt:localStorage.getItem("jwt"),otp}))
   }
+
+  const handleVerifyOtp=(otp)=>{
+    console.log("otp  - ",otp)
+    dispatch(verifyOtp({jwt:localStorage.getItem("jwt"),otp}))
+  }
+
+  
   return (
     <div className='flex flex-col items-center mb-5'>
       <div className='pt-10 w-full lg:w-[60%]'>
@@ -28,21 +40,24 @@ const Profile = () => {
               <div className='space-y-7'>
                 <div className='flex'>
                   <p className='w-[9rem]'>Email :</p>
-                  <p className='text-gray-500'>sambhav03@gmail.com</p>
+                  <p className='text-gray-500'>{auth.user?.email}</p>
 
                 </div>
 
                 <div className='flex'>
                   <p className='w-[9rem]'>Full Name :</p>
-                  <p className='text-gray-500'>Sambhav</p>
+                  <p className='text-gray-500'>{auth.user?.fullName}</p>
 
                 </div>
 
+                
                 <div className='flex'>
-                  <p className='w-[9rem]'>DOB :</p>
-                  <p className='text-gray-500'>29/12/2003</p>
+                  <p className='w-[9rem]'>Wallet :</p>
+                  <p className='text-gray-500'>${wallet.userWallet?.balance}</p>
 
                 </div>
+
+                
 
                 <div className='flex'>
                   <p className='w-[9rem]'>Nationality :</p>
@@ -54,28 +69,18 @@ const Profile = () => {
 
               <div className='space-y-7'>
                 <div className='flex'>
-                  <p className='w-[9rem]'>Email :</p>
-                  <p className='text-gray-500'>sambhav03@gmail.com</p>
+                  <p className='w-[9rem]'>City :</p>
+                  <p className='text-gray-500'>Indore</p>
 
                 </div>
 
                 <div className='flex'>
-                  <p className='w-[9rem]'>Full Name :</p>
-                  <p className='text-gray-500'>Sambhav</p>
+                  <p className='w-[9rem]'>Country :</p>
+                  <p className='text-gray-500'>India</p>
 
                 </div>
 
-                <div className='flex'>
-                  <p className='w-[9rem]'>DOB :</p>
-                  <p className='text-gray-500'>29/12/2003</p>
-
-                </div>
-
-                <div className='flex'>
-                  <p className='w-[9rem]'>Nationality :</p>
-                  <p className='text-gray-500'>Indian</p>
-
-                </div>
+                
 
               </div>
             </div>

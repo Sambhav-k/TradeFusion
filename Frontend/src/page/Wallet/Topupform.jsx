@@ -4,13 +4,18 @@ import { Input } from '@/components/ui/input'
 import React from 'react'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { useDispatch } from 'react-redux'
+import { paymentHandler } from '@/State/Wallet/Action'
 
 
 const Topupform = () => {
     const [amount, setAmount] = React.useState('')
     const [paymentMethod, setPaymentMethod] = React.useState('RAZORPAY')
+    const dispatch=useDispatch();
+
     const handleSubmit=()=>{
         console.log(amount,paymentMethod);
+        dispatch(paymentHandler({jwt:localStorage.getItem("jwt"),paymentMethod,amount}))
     };
 
     const handlePaymentMethodChange = (value) => {

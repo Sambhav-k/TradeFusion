@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   Table,
   TableBody,
@@ -10,8 +10,22 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { useDispatch, useSelector } from 'react-redux';
+import { getWithdrawalHistory } from '@/State/Withdrawal/Action';
+import { readableTimestamp } from '@/Util/readableTimestamp';
+
+
 
 const Withdrawal = () => {
+  const dispatch=useDispatch();
+  const {wallet,withdrawal}=useSelector(store=>store);  
+
+  useEffect(()=>{
+    dispatch(getWithdrawalHistory(localStorage.getItem("jwt")))
+  },[])
+
+
+
   return (
     <div className='p-5 lg:px-20'>
                   <h1 className='font-bold text-3xl pb-5'>Withdrawal</h1>
@@ -29,18 +43,18 @@ const Withdrawal = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {[1,1,1,1,1,1,1,1,1].map((item,index)=><TableRow key={index}>
+                      {withdrawal.history.map((item,index)=><TableRow key={index}>
                         <TableCell>
-                          <p>2024/05/31</p>
+                        {readableTimestamp(item?.date)}
                           
                         </TableCell>
                         
                         
-                        <TableCell>9124463121</TableCell>
+                        <TableCell>bank</TableCell>
                         
-                        <TableCell className="">$69249</TableCell>
+                        <TableCell className="">${item.amount}</TableCell>
                         <TableCell className="text-right">
-                         345
+                         {item.status}
                         </TableCell>
                       </TableRow>)}
                       

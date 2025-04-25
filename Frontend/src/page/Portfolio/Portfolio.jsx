@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
     Table,
     TableBody,
@@ -8,9 +8,17 @@ import {
     TableHeader,
     TableRow,
   } from "@/components/ui/table"
-  import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserAssets } from '@/State/Asset/Action';
 
 const Portfolio = () => {
+  const dispatch=useDispatch();
+  const {asset}=useSelector(store=>store)
+
+  useEffect(()=>{
+    dispatch(getUserAssets(localStorage.getItem("jwt")))
+  },[]);
   return (
   
     <div className='p-5 lg:px-20'>
@@ -22,24 +30,42 @@ const Portfolio = () => {
             <TableHead className="w-[100px]">Asset</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Unit</TableHead>
-            <TableHead>Change</TableHead>
-            <TableHead>Change%</TableHead>
+            <TableHead>24h Change</TableHead>
+            <TableHead>24h Change%</TableHead>
             <TableHead className="text-right">Value</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {[1,1,1,1,1,1,1,1,1].map((item,index)=><TableRow key={index}>
+          {asset.userAssets.map((item,index)=><TableRow key={index}>
             <TableCell className="font-medium flex items-center gap-2">
               <Avatar className="-z-50">
-                  <AvatarImage src="https://assets.coingecko.com/coins/images/1/standard/bitcoin.png?1696501400"/>
+                  <AvatarImage src={item.coin?.image}/>
               </Avatar>
-              <span>Bitcoin</span>
+              <span>{item.coin?.name}</span>
             </TableCell>
-            <TableCell>BTC</TableCell>
-            <TableCell>9124463121</TableCell>
-            <TableCell>1364881428323</TableCell>
-            <TableCell>0.20009</TableCell>
-            <TableCell className="text-right">$69249</TableCell>
+            <TableCell>${item.coin.current_price}</TableCell>
+            <TableCell>{item?.quantity}</TableCell>
+            <TableCell
+                    className={`${
+                      item.coin.price_change_percentage_24h < 0
+                        ? "text-red-600"
+                        : "text-green-600"
+                    }`}
+                  >
+                    {item.coin.price_change_24h}
+                  </TableCell>
+                  <TableCell
+                    className={`${
+                      item.coin.price_change_percentage_24h < 0
+                        ? "text-red-600"
+                        : "text-green-600"
+                    }`}
+                  >
+                    {item.coin.price_change_percentage_24h}%
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {item.coin.current_price * item.quantity}
+                  </TableCell>
           </TableRow>)}
           
         </TableBody>

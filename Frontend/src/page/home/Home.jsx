@@ -1,4 +1,4 @@
- import React from 'react'
+ import React, { useEffect } from 'react'
 import { Button } from "@/components/ui/button";
 import AssetTable from './AssetTable';
 import StockChart from './StockChart';
@@ -6,11 +6,25 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Cross1Icon,DotIcon } from "@radix-ui/react-icons";
 import { MessageCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useDispatch, useSelector } from 'react-redux';
+import { getCoinList,getTop50CoinList } from '@/State/Coin/Action';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+  } from "@/components/ui/pagination"
+  
 
 const Home = () => {
     const [category,setCategory]=React.useState("all")
     const [inputValue, setInputValue] = React.useState("");
     const [isBotRelease, setIsBotRelease] = React.useState(false);
+    const {coin}=useSelector(store=>store)
+    const dispatch=useDispatch()
 
     const handleCategory=(value)=>{
         setCategory(value)
@@ -28,6 +42,14 @@ const Home = () => {
         }
         setInputValue("")
     }
+
+    useEffect(()=>{
+        dispatch(getCoinList(1))
+      },[])
+
+    useEffect(()=>{
+        dispatch(getTop50CoinList())
+    },[category])
 
 
   return (
@@ -53,35 +75,69 @@ const Home = () => {
                     className="rounded-full">Top Losers </Button>
 
                 </div>
-                <AssetTable/>
+                <AssetTable coin={category=="all"?coin.coinList:coin.top50} category={category}/>
+                <div>
+                <Pagination>
+                    <PaginationContent>
+                    <PaginationItem>
+                        <PaginationPrevious href="#" />
+                    </PaginationItem>
+                    <PaginationItem>
+                        <PaginationLink href="#">1</PaginationLink>
+                    </PaginationItem>
+    <PaginationItem>
+      <PaginationEllipsis />
+    </PaginationItem>
+    <PaginationItem>
+      <PaginationNext href="#" />
+    </PaginationItem>
+  </PaginationContent>
+</Pagination>
 
+                </div>
 
             </div>
             <div className='hidden lg:block lg:w-[50%] p-5'>
-                <StockChart/>
+                <StockChart coinId={"bitcoin"}/>
 
-                <div className='flex gap-5 items-center'>
-                    <div>
-                        <Avatar>
-                            <AvatarImage src="https://assets.coingecko.com/coins/images/279/standard/ethereum.png?1696501628"/>
-                        </Avatar>
-                    </div>
-                    <div>
-                    <div className='flex items-center gap-2'>
-                        <p>ETH</p>
-                        <DotIcon className='text-gray-400'/>
-                        <p className='text-gray-400'>Ethereum</p>
-                        </div>   
-                        <div className='flex item-end gap-2'>
-                        <p className='text-x1 font-bold'>5464</p>
-                        <p className='text-red-600'>
-                            <span>-1319049822.578</span>
-                            <span>(-0.29803%)</span>
-                        </p>
-                    
-                    </div>
-                    </div>
-                </div>
+                <div className="flex gap-5 items-center">
+            <div>
+              <Avatar>
+                <AvatarImage src={coin.coinDetails?.image?.large} />
+              </Avatar>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <p>{coin.coinDetails?.symbol?.toUpperCase()}</p>
+                <DotIcon className="text-gray-400" />
+                <p className="text-gray-400">{coin.coinDetails?.name}</p>
+              </div>
+              <div className="flex items-end gap-2">
+                <p className="text-xl font-bold">
+                  {coin.coinDetails?.market_data.current_price.usd}
+                </p>
+                <p
+                  className={`${
+                    coin.coinDetails?.market_data.market_cap_change_24h < 0
+                      ? "text-red-600"
+                      : "text-green-600"
+                  }`}
+                >
+                  <span className="">
+                    {coin.coinDetails?.market_data.market_cap_change_24h}
+                  </span>
+                  <span>
+                    (
+                    {
+                      coin.coinDetails?.market_data
+                        .market_cap_change_percentage_24h
+                    }
+                    %)
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
                 
             </div>
 

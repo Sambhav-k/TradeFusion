@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import Navbar from './page/Navbar/Navbar'
 import Home from './page/home/Home'
@@ -14,16 +14,27 @@ import NotFound from './page/Not Found/NotFound.jsx'
 import Watchlist from "./page/Watchlist/Watchlist.jsx";
 import Profile from "./page/Profile/Profile.jsx"
 import Auth from './page/Auth/Auth.jsx';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { getUser } from './State/Auth/Action';
 
 
 function App() {
+
+  const {auth}=useSelector(store=>store);
+  const dispatch=useDispatch()
+  
+  
+  console.log("auth ----- ",auth);
+
+  useEffect(()=>{
+    dispatch(getUser(auth.jwt || localStorage.getItem("jwt")))
+  },[auth.jwt])
  
 
   return (
     <>
-    <Auth/>
-   {false && <div>
+    
+   {auth.user ? <div>
     <Navbar/>
      <Routes>
        <Route path="/" element={<Home/>}/>
@@ -40,7 +51,7 @@ function App() {
        
 
      </Routes>
-    </div>}
+    </div>: <Auth/>}
      
      
     </>
